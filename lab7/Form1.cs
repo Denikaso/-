@@ -15,7 +15,7 @@ namespace lab7
 {
     public partial class Form1 : Form
     {
-        const int SIZE = 500;
+                
         private Dictionary<string, Series> seriesDictionary = new Dictionary<string, Series>();
         
         public Form1()
@@ -31,19 +31,19 @@ namespace lab7
 
             // Настраиваем графики
             linearSearchChart.AxisX = new AxesCollection { new Axis { Title = "Размер входа\n(Линейный поиск)" } };
-            linearSearchChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 2000 } };
+            linearSearchChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 5 } };
             AddSeriesForAlgorithm("Линейный поиск", System.Windows.Media.Colors.Green, linearSearchChart);
 
             barrierLinearSearchChart.AxisX = new AxesCollection { new Axis { Title = "Размер входа\n(Линейный поиск с барьером)" } };
-            barrierLinearSearchChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 2000 } };
+            barrierLinearSearchChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 5 } };
             AddSeriesForAlgorithm("Линейный поиск с барьером", System.Windows.Media.Colors.Blue, barrierLinearSearchChart);
 
             bubbleSortChart.AxisX = new AxesCollection { new Axis { Title = "Размер входа\n(Сортировка простым обменом)" } };
-            bubbleSortChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 10000 } };
+            bubbleSortChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 2000 } };
             AddSeriesForAlgorithm("Сортировка обменом", System.Windows.Media.Colors.Red, bubbleSortChart);
 
             selectionSortChart.AxisX = new AxesCollection { new Axis { Title = "Размер входа\n(Сортировка слиянием)" } };
-            selectionSortChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 10000 } };
+            selectionSortChart.AxisY = new AxesCollection { new Axis { Title = "Время (нс)", MinValue = 0, MaxValue = 2000 } };
             AddSeriesForAlgorithm("Сортировка выбором", System.Windows.Media.Colors.Purple, selectionSortChart);
 
             TestAlgorithms();
@@ -81,21 +81,21 @@ namespace lab7
         {
             int numIterations = 5; // Количество итераций для усреднения
 
-            for (int size = 1; size <= maxSize; size++)
+            for (int i = 0; i < bestCaseData.Length; i++) // Iterate over generated sizes
             {
+                int size = bestCaseData[i].Length; // Get the actual size
+
                 double totalTimeBest = 0;
                 double totalTimeAverage = 0;
                 double totalTimeWorst = 0;
 
-                for (int i = 0; i < numIterations; i++)
+                for (int j = 0; j < numIterations; j++)
                 {
-                    double time = MeasureTime(() => LinearSearch(bestCaseData[size - 1], bestCaseData[size - 1][0]));
+                    double time = MeasureTime(() => LinearSearch(bestCaseData[i], bestCaseData[i][0]));
                     totalTimeBest += time;
-
-                    time = MeasureTime(() => LinearSearch(averageCaseData[size - 1], averageCaseData[size - 1][size / 2]));
+                    time = MeasureTime(() => LinearSearch(averageCaseData[i], averageCaseData[i][size / 2]));
                     totalTimeAverage += time;
-
-                    time = MeasureTime(() => LinearSearch(worstCaseData[size - 1], worstCaseData[size - 1][size - 1]));
+                    time = MeasureTime(() => LinearSearch(worstCaseData[i], worstCaseData[i][size - 1]));
                     totalTimeWorst += time;
                 }
 
@@ -109,21 +109,21 @@ namespace lab7
         {
             int numIterations = 5; // Количество итераций для усреднения
 
-            for (int size = 1; size <= maxSize; size++)
+            for (int i = 0; i < bestCaseData.Length; i++)
             {
+                int size = bestCaseData[i].Length; // Get the actual size
+
                 double totalTimeBest = 0;
                 double totalTimeAverage = 0;
                 double totalTimeWorst = 0;
 
-                for (int i = 0; i < numIterations; i++)
+                for (int j = 0; j < numIterations; j++)
                 {
-                    double time = MeasureTime(() => BarrierLinearSearch(bestCaseData[size - 1], bestCaseData[size - 1][0]));
+                    double time = MeasureTime(() => BarrierLinearSearch(bestCaseData[i], bestCaseData[i][0]));
                     totalTimeBest += time;
-
-                    time = MeasureTime(() => BarrierLinearSearch(averageCaseData[size - 1], averageCaseData[size - 1][size / 2]));
+                    time = MeasureTime(() => BarrierLinearSearch(averageCaseData[i], averageCaseData[i][size / 2]));
                     totalTimeAverage += time;
-
-                    time = MeasureTime(() => BarrierLinearSearch(worstCaseData[size - 1], worstCaseData[size - 1][size - 1]));
+                    time = MeasureTime(() => BarrierLinearSearch(worstCaseData[i], worstCaseData[i][size - 1]));
                     totalTimeWorst += time;
                 }
 
@@ -137,31 +137,33 @@ namespace lab7
         {
             int numIterations = 5; // Количество итераций для усреднения
 
-            for (int size = 1; size <= maxSize; size++)
+            for (int i = 0; i < bestCaseData.Length; i++)
             {
+                int size = bestCaseData[i].Length; // Get the actual size
+
                 double totalTimeBest = 0;
                 double totalTimeAverage = 0;
                 double totalTimeWorst = 0;
 
-                for (int i = 0; i < numIterations; i++)
+                for (int j = 0; j < numIterations; j++)
                 {
                     int[] dataCopy;
 
-                    // Лучший случай
+                    // Best case
                     dataCopy = new int[size];
-                    Array.Copy(bestCaseData[size - 1], dataCopy, size);
+                    Array.Copy(bestCaseData[i], dataCopy, size);
                     double time = MeasureTime(() => BubbleSort(dataCopy));
                     totalTimeBest += time;
 
-                    // Средний случай
+                    // Average case
                     dataCopy = new int[size];
-                    Array.Copy(averageCaseData[size - 1], dataCopy, size);
+                    Array.Copy(averageCaseData[i], dataCopy, size);
                     time = MeasureTime(() => BubbleSort(dataCopy));
                     totalTimeAverage += time;
 
-                    // Худший случай
+                    // Worst case
                     dataCopy = new int[size];
-                    Array.Copy(worstCaseData[size - 1], dataCopy, size);
+                    Array.Copy(worstCaseData[i], dataCopy, size);
                     time = MeasureTime(() => BubbleSort(dataCopy));
                     totalTimeWorst += time;
                 }
@@ -175,31 +177,33 @@ namespace lab7
         {
             int numIterations = 5; // Количество итераций для усреднения
 
-            for (int size = 1; size <= maxSize; size++)
+            for (int i = 0; i < bestCaseData.Length; i++)
             {
+                int size = bestCaseData[i].Length; // Get the actual size
+
                 double totalTimeBest = 0;
                 double totalTimeAverage = 0;
                 double totalTimeWorst = 0;
 
-                for (int i = 0; i < numIterations; i++)
+                for (int j = 0; j < numIterations; j++)
                 {
                     int[] dataCopy;
 
-                    // Лучший случай
+                    // Best case
                     dataCopy = new int[size];
-                    Array.Copy(bestCaseData[size - 1], dataCopy, size);
+                    Array.Copy(bestCaseData[i], dataCopy, size);
                     double time = MeasureTime(() => SelectionSort(dataCopy));
                     totalTimeBest += time;
 
-                    // Средний случай
+                    // Average case
                     dataCopy = new int[size];
-                    Array.Copy(averageCaseData[size - 1], dataCopy, size);
+                    Array.Copy(averageCaseData[i], dataCopy, size);
                     time = MeasureTime(() => SelectionSort(dataCopy));
                     totalTimeAverage += time;
 
-                    // Худший случай
+                    // Worst case
                     dataCopy = new int[size];
-                    Array.Copy(worstCaseData[size - 1], dataCopy, size);
+                    Array.Copy(worstCaseData[i], dataCopy, size);
                     time = MeasureTime(() => SelectionSort(dataCopy));
                     totalTimeWorst += time;
                 }
@@ -239,17 +243,17 @@ namespace lab7
             {
                 if (data[i] == value)
                 {
-                    return i; // Возвращаем индекс найденного элемента
+                    return i; 
                 }
             }
-            return -1; // Элемент не найден
+            return -1; 
         }
 
         private int BarrierLinearSearch(int[] data, int value)
         {
             int[] dataWithBarrier = new int[data.Length + 1];
             Array.Copy(data, dataWithBarrier, data.Length);
-            dataWithBarrier[data.Length] = value; // Добавляем барьер в конец массива
+            dataWithBarrier[data.Length] = value; 
 
             int i = 0;
             while (dataWithBarrier[i] != value)
@@ -258,11 +262,11 @@ namespace lab7
             }
             if (i < data.Length)
             {
-                return i; // Элемент найден
+                return i; 
             }
             else
             {
-                return -1; // Элемент не найден
+                return -1;
             }
         }
 
@@ -273,8 +277,7 @@ namespace lab7
                 for (int j = 0; j < data.Length - i - 1; j++)
                 {
                     if (data[j] > data[j + 1])
-                    {
-                        // Меняем элементы местами
+                    {                        
                         int temp = data[j];
                         data[j] = data[j + 1];
                         data[j + 1] = temp;
@@ -294,8 +297,7 @@ namespace lab7
                     {
                         minIndex = j;
                     }
-                }
-                // Меняем местами минимальный элемент с текущим
+                }                
                 int temp = data[minIndex];
                 data[minIndex] = data[i];
                 data[i] = temp;
@@ -312,7 +314,7 @@ namespace lab7
             Stopwatch stopwatch = Stopwatch.StartNew();
             action();
             stopwatch.Stop();
-            return stopwatch.ElapsedTicks * 1000000.0 * 1000 / Stopwatch.Frequency;
+            return stopwatch.ElapsedTicks * 1000000.0 / Stopwatch.Frequency;
         }
 
         private void AddChartDataForAlgorithm(string algorithmName, string caseType, int size, double time)
@@ -385,21 +387,27 @@ namespace lab7
 
         private void TestAlgorithms()
         {
-            int[][] bestCaseData = new int[SIZE][];
-            int[][] averageCaseData = new int[SIZE][];
-            int[][] worstCaseData = new int[SIZE][];
+            int minSize = 100;
+            int maxSize = 3000;
+            int step = 10;
+            
+            int[][] bestCaseData = Enumerable.Range(minSize, maxSize - minSize + 1)
+                                             .Where(size => (size - minSize) % step == 0)
+                                             .Select(GenerateBestCaseData)
+                                             .ToArray();
+            int[][] averageCaseData = Enumerable.Range(minSize, maxSize - minSize + 1)
+                                               .Where(size => (size - minSize) % step == 0)
+                                               .Select(GenerateAverageCaseData)
+                                               .ToArray();
+            int[][] worstCaseData = Enumerable.Range(minSize, maxSize - minSize + 1)
+                                              .Where(size => (size - minSize) % step == 0)
+                                              .Select(GenerateWorstCaseData)
+                                              .ToArray();
 
-            for (int size = 1; size <= SIZE; size++)
-            {
-                bestCaseData[size - 1] = GenerateBestCaseData(size);
-                averageCaseData[size - 1] = GenerateAverageCaseData(size);
-                worstCaseData[size - 1] = GenerateWorstCaseData(size);
-            }
-
-            TestLinearSearch(SIZE, bestCaseData, averageCaseData, worstCaseData);
-            TestBarrierLinearSearch(SIZE, bestCaseData, averageCaseData, worstCaseData);
-            TestBubbleSort(SIZE, bestCaseData, averageCaseData, worstCaseData);
-            TestSelectionSort(SIZE, bestCaseData, averageCaseData, worstCaseData);
+            TestLinearSearch(maxSize, bestCaseData, averageCaseData, worstCaseData);
+            TestBarrierLinearSearch(maxSize, bestCaseData, averageCaseData, worstCaseData);
+            TestBubbleSort(maxSize, bestCaseData, averageCaseData, worstCaseData);
+            TestSelectionSort(maxSize, bestCaseData, averageCaseData, worstCaseData);
 
             ShowCharts();
         }
